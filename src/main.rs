@@ -1,12 +1,11 @@
 use crate::game::*;
 use rand::seq::SliceRandom;
-use std::{io, io::prelude::*};
 static SET: &str = "abcdefghijklmnopqrstuvwxyz";
 
 pub mod game;
 
 fn main() {
-    let message = String::from("Hello World!");
+    let mut message = String::from("this is a message");
     println!("cleartext: {}", message);
     let cipher = shuffle(SET);
     let encrypted = encrypt(&message, SET, &cipher);

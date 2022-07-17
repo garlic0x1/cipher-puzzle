@@ -1,5 +1,3 @@
-use std::{io, io::prelude::*};
-
 pub struct Game {
     cleartext: String,
     encoded: String,
@@ -26,13 +24,14 @@ impl Game {
     }
 
     pub fn play(&mut self) {
-        eprintln!("Enter 2 character commands to edit (selection+motion syntax)");
         while self.working != self.cleartext.to_ascii_lowercase() {
             print!("{esc}c", esc = 27 as char);
             println!("encrypted: {}\nworking: {}\n", self.encoded, self.working);
+            eprintln!("Enter 2 character commands to edit (selection+motion syntax)");
             let mut cmd = String::new();
             let res = std::io::stdin().read_line(&mut cmd);
             if let Ok(_) = res {
+                eprintln!("performing command");
                 self.command(&cmd);
             } else {
                 eprintln!("Please enter a 2 character command (selection, motion)");
@@ -48,14 +47,16 @@ impl Game {
         let motion = command.chars().nth(1);
         if let Some(selection) = selection {
             if let Some(motion) = motion {
-                println!("changing {} to {}", selection, motion);
-                let mut ret = self.working.clone();
-                for i in 0..self.working.len() {
-                    if self.encoded.chars().nth(i).unwrap() == selection {
-                        ret.replace_range(i..=i, &motion.to_string())
+                if self.set.contains(selection) && self.set.contains(motion) {
+                    println!("changing {} to {}", selection, motion);
+                    let mut ret = self.working.clone();
+                    for i in 0..self.working.len() {
+                        if self.encoded.chars().nth(i).unwrap() == selection {
+                            ret.replace_range(i..=i, &motion.to_string())
+                        }
                     }
+                    self.working = ret;
                 }
-                self.working = ret;
             }
         }
     }
