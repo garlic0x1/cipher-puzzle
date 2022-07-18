@@ -47,7 +47,7 @@ impl Game {
                 match highlight {
                     Some(h) => {
                         if nth == h {
-                            print!("{}", nth.to_string().red())
+                            print!("{}", nth.to_string().yellow().underline().italic())
                         } else {
                             print!("{}", nth);
                         }
@@ -71,7 +71,7 @@ impl Game {
             rot += 1;
         }
 
-        eprintln!("Enter 2 character commands to edit (selection+motion syntax)");
+        eprintln!(":h for help");
     }
 
     pub fn play(&mut self) {
@@ -82,16 +82,15 @@ impl Game {
             self.print(None);
 
             if let Ok(sel) = stdout.read_char() {
-                //if self.set.contains(sel) {
-                self.print(Some(sel));
-                //}
+                if self.set.contains(sel) {
+                    self.print(Some(sel));
+                }
                 cmd.push(sel);
             }
 
             if let Ok(motion) = stdout.read_char() {
                 cmd.push(motion);
             }
-            eprintln!("performing command");
             self.command(&cmd);
         }
 
@@ -102,6 +101,19 @@ impl Game {
     pub fn hint(&mut self) {}
 
     pub fn command(&mut self, command: &str) {
+        match command {
+            ":h" => {
+                //self.print_help();
+                println!(
+                    "select a char with first key, and change it with second (selection, motion)"
+                );
+                println!("press any key to continue");
+                let stdout = Term::buffered_stdout();
+                stdout.read_char();
+                return;
+            }
+            _ => (),
+        }
         let selection = command.chars().nth(0);
         let motion = command.chars().nth(1);
         if let Some(selection) = selection {
@@ -115,13 +127,15 @@ impl Game {
                     }
                     self.working = ret;
                 } else if motion == ' ' {
-                    let mut ret = self.working.clone();
-                    for i in 0..self.working.len() {
-                        if self.encoded.chars().nth(i).unwrap() == selection {
-                            ret.replace_range(i..=i, "_");
+                    if self.set.contains(selection) {
+                        let mut ret = self.working.clone();
+                        for i in 0..self.working.len() {
+                            if self.encoded.chars().nth(i).unwrap() == selection {
+                                ret.replace_range(i..=i, "_");
+                            }
                         }
+                        self.working = ret;
                     }
-                    self.working = ret;
                 }
             }
         }
