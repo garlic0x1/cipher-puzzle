@@ -94,8 +94,11 @@ impl Game {
             self.command(&cmd);
         }
 
+        print!("{esc}c", esc = 27 as char);
         println!("You win!");
-        println!("cleartext:\t\"{}\"", self.cleartext);
+        println!("\"{}\"", self.cleartext);
+        println!("press any key to continue");
+        stdout.read_char();
     }
 
     pub fn hint(&mut self) {}

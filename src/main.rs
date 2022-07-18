@@ -24,13 +24,13 @@ fn find_word() -> String {
 }
 
 fn main() {
-    let message = find_word();
-    println!("cleartext: {}", message);
-    let cipher = shuffle(SET);
-    let encrypted = encrypt(&message, SET, &cipher);
-
-    let mut game = Game::new(message, encrypted, SET.to_string());
-    game.play();
+    loop {
+        let message = find_word();
+        let cipher = shuffle(SET);
+        let encrypted = encrypt(&message, SET, &cipher);
+        let mut game = Game::new(message, encrypted, SET.to_string());
+        game.play();
+    }
 }
 
 fn shuffle(string: &str) -> String {
