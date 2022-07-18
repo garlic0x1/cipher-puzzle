@@ -91,7 +91,9 @@ impl Game {
             if let Ok(motion) = stdout.read_char() {
                 cmd.push(motion);
             }
-            self.command(&cmd);
+            if !self.command(&cmd) {
+                break;
+            }
         }
 
         print!("{esc}c", esc = 27 as char);
@@ -103,7 +105,7 @@ impl Game {
 
     pub fn hint(&mut self) {}
 
-    pub fn command(&mut self, command: &str) {
+    pub fn command(&mut self, command: &str) -> bool {
         match command {
             ":h" => {
                 //self.print_help();
@@ -111,11 +113,11 @@ impl Game {
                     "select a char with first key, and change it with second (selection, motion)"
                 );
                 println!("use '?' as a motion for a hint");
-                println!("special commands\nclear - :c");
+                println!("special commands\nclear - :c\nquit - :q");
                 println!("press any key to continue");
                 let stdout = Term::buffered_stdout();
                 stdout.read_char();
-                return;
+                return true;
             }
             ":c" => {
                 let mut working = String::new();
@@ -128,6 +130,7 @@ impl Game {
                 }
                 self.working = working;
             }
+            ":q" => return false,
             _ => (),
         }
         let selection = command.chars().nth(0);
@@ -166,5 +169,6 @@ impl Game {
                 }
             }
         }
+        true
     }
 }
