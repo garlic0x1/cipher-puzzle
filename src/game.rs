@@ -112,17 +112,15 @@ impl Game {
         stdout.read_char();
     }
 
-    pub fn hint(&mut self) {}
-
     pub fn command(&mut self, command: &str) -> bool {
         match command {
             ":h" => {
-                //self.print_help();
+                print!("{esc}c", esc = 27 as char);
                 println!(
                     "select a char with first key, and change it with second (selection, motion)"
                 );
                 println!("use '?' as a motion for a hint");
-                println!("special commands\nclear - :c\nquit - :q");
+                println!("special commands\nclear - :c\nquit - :q\ncheck - :?");
                 println!("press any key to continue");
                 let stdout = Term::buffered_stdout();
                 stdout.read_char();
