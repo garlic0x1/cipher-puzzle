@@ -107,10 +107,23 @@ impl Game {
                 println!(
                     "select a char with first key, and change it with second (selection, motion)"
                 );
+                println!("use '?' as a motion for a hint");
+                println!("special commands\nclear - :c");
                 println!("press any key to continue");
                 let stdout = Term::buffered_stdout();
                 stdout.read_char();
                 return;
+            }
+            ":c" => {
+                let mut working = String::new();
+                for c in self.encoded.chars() {
+                    if self.set.contains(c) {
+                        working.push('_');
+                    } else {
+                        working.push(c);
+                    }
+                }
+                self.working = working;
             }
             _ => (),
         }
@@ -126,6 +139,17 @@ impl Game {
                         }
                     }
                     self.working = ret;
+                } else if motion == '?' {
+                    if self.set.contains(selection) {
+                        let mut ret = self.working.clone();
+                        for i in 0..self.working.len() {
+                            if self.encoded.chars().nth(i).unwrap() == selection {
+                                let clear = self.cleartext.chars().nth(i).unwrap();
+                                ret.replace_range(i..=i, &clear.to_string().to_ascii_lowercase());
+                            }
+                        }
+                        self.working = ret;
+                    }
                 } else if motion == ' ' {
                     if self.set.contains(selection) {
                         let mut ret = self.working.clone();
