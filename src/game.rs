@@ -66,6 +66,7 @@ impl Game {
                     && (nth
                         != self
                             .cleartext
+                            .to_ascii_lowercase()
                             .chars()
                             .nth((self.line_size * rot) + i)
                             .unwrap())
