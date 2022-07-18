@@ -76,7 +76,7 @@ impl Game {
                     print!("{}", nth);
                 }
             }
-            println!();
+            println!("\n");
             rot += 1;
         }
 

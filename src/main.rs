@@ -9,7 +9,7 @@ use std::{
 };
 
 pub mod game;
-const FILENAME: &str = "./kjv.txt";
+const FILENAME: &str = "./quotes.txt";
 
 fn find_word() -> String {
     let f = File::open(FILENAME)
