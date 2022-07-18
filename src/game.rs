@@ -28,11 +28,7 @@ impl Game {
         }
     }
 
-    pub fn pretty_print(&self, highlight: Option<char>) {
-        print!("{esc}c", esc = 27 as char);
-    }
-
-    pub fn print(&self, highlight: Option<char>) {
+    pub fn print(&self, highlight: Option<char>, check: bool) {
         print!("{esc}c", esc = 27 as char);
         let mut rot = 0;
 
@@ -47,7 +43,7 @@ impl Game {
                 match highlight {
                     Some(h) => {
                         if nth == h {
-                            print!("{}", nth.to_string().yellow().underline().italic())
+                            print!("{}", nth.to_string().black().underline().on_bright_cyan())
                         } else {
                             print!("{}", nth);
                         }
@@ -65,7 +61,19 @@ impl Game {
                     println!();
                     break 'outer;
                 }
-                print!("{}", nth);
+                if check
+                    && self.set.contains(nth)
+                    && (nth
+                        != self
+                            .cleartext
+                            .chars()
+                            .nth((self.line_size * rot) + i)
+                            .unwrap())
+                {
+                    print!("{}", nth.to_string().black().underline().on_bright_red());
+                } else {
+                    print!("{}", nth);
+                }
             }
             println!();
             rot += 1;
@@ -79,11 +87,11 @@ impl Game {
         while self.working != self.cleartext.to_ascii_lowercase() {
             let mut cmd = String::new();
 
-            self.print(None);
+            self.print(None, false);
 
             if let Ok(sel) = stdout.read_char() {
                 if self.set.contains(sel) {
-                    self.print(Some(sel));
+                    self.print(Some(sel), false);
                 }
                 cmd.push(sel);
             }
@@ -129,6 +137,13 @@ impl Game {
                     }
                 }
                 self.working = working;
+            }
+            ":?" => {
+                self.print(None, true);
+                println!("press any key to continue");
+                let stdout = Term::buffered_stdout();
+                stdout.read_char();
+                return true;
             }
             ":q" => return false,
             _ => (),
