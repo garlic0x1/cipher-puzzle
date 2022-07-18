@@ -2,10 +2,29 @@ use crate::game::*;
 use rand::seq::SliceRandom;
 static SET: &str = "abcdefghijklmnopqrstuvwxyz";
 
+use rand::seq::IteratorRandom; // 0.7.3
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
+
 pub mod game;
+const FILENAME: &str = "./kjv.txt";
+
+fn find_word() -> String {
+    let f = File::open(FILENAME)
+        .unwrap_or_else(|e| panic!("(;_;) file not found: {}: {}", FILENAME, e));
+    let f = BufReader::new(f);
+
+    let lines = f.lines().map(|l| l.expect("Couldn't read line"));
+
+    lines
+        .choose(&mut rand::thread_rng())
+        .expect("File had no lines")
+}
 
 fn main() {
-    let mut message = String::from("this is a message");
+    let message = find_word();
     println!("cleartext: {}", message);
     let cipher = shuffle(SET);
     let encrypted = encrypt(&message, SET, &cipher);
